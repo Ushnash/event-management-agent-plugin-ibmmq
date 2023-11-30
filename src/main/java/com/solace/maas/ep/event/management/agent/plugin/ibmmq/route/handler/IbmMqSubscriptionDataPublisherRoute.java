@@ -1,5 +1,6 @@
 package com.solace.maas.ep.event.management.agent.plugin.ibmmq.route.handler;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.solace.maas.ep.event.management.agent.plugin.ibmmq.processor.IbmMqSubscriptionProcessor;
@@ -12,7 +13,8 @@ import com.solace.maas.ep.event.management.agent.plugin.route.manager.RouteManag
 
 @Component
 public class IbmMqSubscriptionDataPublisherRoute extends DataPublisherRouteBuilder {
-	
+
+	@Autowired
 	public IbmMqSubscriptionDataPublisherRoute(IbmMqSubscriptionProcessor processor, RouteManager routeManager,
 			MDCProcessor mdcProcessor, ScanTypeDescendentsProcessor scanTypeDescendentsProcessor) {
 		super(processor, IbmMqRouteId.IBMMQ_SUBSCRIPTION.label, IbmMqRouteType.IBMMQ_SUBSCRIPTION.label,

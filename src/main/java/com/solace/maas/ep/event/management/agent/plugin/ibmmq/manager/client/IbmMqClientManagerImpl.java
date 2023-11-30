@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.solace.maas.ep.event.management.agent.plugin.ibmmq.manager.client;
 
@@ -24,49 +24,46 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 
+ *
  */
 @Slf4j
 @Data
 @Component
 public class IbmMqClientManagerImpl implements MessagingServiceClientManager<IbmMqHttpClient> {
 
-	private static final String BASE_PATH = "ibmmq/rest/v1/admin";
-	private static final String QUEUE_MANAGER_NAME = "QueueManager";
+    @Override
+    public IbmMqHttpClient getClient(ConnectionDetailsEvent connectionDetailsEvent) {
 
-	@Override
-	public IbmMqHttpClient getClient(ConnectionDetailsEvent connectionDetailsEvent) {
+        log.trace("Creating IBMMQ-HTTP client for messaging service [{}].",
+                connectionDetailsEvent.getMessagingServiceId());
 
-		log.trace("Creating IBMMQ-HTTP client for messaging service [{}].",
-				connectionDetailsEvent.getMessagingServiceId());
+        AuthenticationDetailsEvent authenticationDetailsEvent = connectionDetailsEvent.getAuthenticationDetails()
+                .stream()
+                .findFirst().orElseThrow(() -> {
+                    String message = String.format("Could not find authentication details for service with id [%s].",
+                            connectionDetailsEvent.getMessagingServiceId());
+                    log.error(message);
+                    return new NoSuchElementException(message);
+                });
 
-		AuthenticationDetailsEvent authenticationDetailsEvent = connectionDetailsEvent.getAuthenticationDetails()
-				.stream()
-				.findFirst().orElseThrow(() -> {
-					String message = String.format("Could not find authentication details for service with id [%s].",
-							connectionDetailsEvent.getMessagingServiceId());
-					log.error(message);
-					return new NoSuchElementException(message);
-				});
+        String username = MessagingServiceConfigurationUtil.getUsername(authenticationDetailsEvent);
+        String password = MessagingServiceConfigurationUtil.getPassword(authenticationDetailsEvent);
+        String url = connectionDetailsEvent.getUrl();
 
-		String username = MessagingServiceConfigurationUtil.getUsername(authenticationDetailsEvent);
-		String password = MessagingServiceConfigurationUtil.getPassword(authenticationDetailsEvent);
-		String url = connectionDetailsEvent.getUrl();
+        //so that we can configure Jackson
+        ObjectMapper mapper = JsonMapper
+                .builder()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .build();
 
-		//so that we can configure Jackson
-		ObjectMapper mapper = JsonMapper
-				.builder()
-				.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-				.build();
 
-		
-		IbmMqHttpClient client = Feign.builder()
-				.requestInterceptor(new BasicAuthRequestInterceptor(username, password))
-				.contract(new SpringMvcContract())
-				.decoder(new JacksonDecoder(mapper))
-				.target(IbmMqHttpClient.class, url);
+        IbmMqHttpClient client = Feign.builder()
+                .requestInterceptor(new BasicAuthRequestInterceptor(username, password))
+                .contract(new SpringMvcContract())
+                .decoder(new JacksonDecoder(mapper))
+                .target(IbmMqHttpClient.class, url);
 
-		return client;
-	}
+        return client;
+    }
 
 }

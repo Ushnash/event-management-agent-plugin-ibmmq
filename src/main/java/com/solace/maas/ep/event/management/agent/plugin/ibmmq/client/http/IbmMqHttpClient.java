@@ -4,17 +4,17 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-//TODO:Externalize Version
-
+/**
+ * Uses OpenFeign to create the MQ REST API Admin Client.
+ */
 @FeignClient(name = "ibmmq-http-client")
 public interface IbmMqHttpClient {
 
-	@GetMapping("/ibmmq/rest/v1/admin/qmgr")
-	String getQueueManagers();
+	/*Gets all queues on a given queue manager*/
+	@GetMapping("/queue")
+	IbmMqQueueResponse getQueues();
 
-	@GetMapping("/ibmmq/rest/v1/admin/qmgr/{qmgrName}/queue")
-	IbmMqQueueResponse getQueues(@PathVariable("qmgrName") String qmgrName);
-	
-	@GetMapping("/ibmmq/rest/v1/admin/qmgr/{qmgrName}/subscription")
-	IbmMqSubscriptionResponse getSubscriptions(@PathVariable("qmgrName") String qmgrName);
+	/*Gets all subscriptions (topics) on a given queue manager*/
+	@GetMapping("/subscription")
+	IbmMqSubscriptionResponse getSubscriptions();
 }

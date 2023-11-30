@@ -16,45 +16,40 @@ import com.solace.maas.ep.event.management.agent.plugin.route.delegate.base.Mess
 @Component
 public class IbmMqRouteDelegateImpl extends MessagingServiceRouteDelegateImpl {
 
-	public IbmMqRouteDelegateImpl() {
-		super("IBMMQ");
-		System.out.println("### PLUGIN `IBMMQ` HAS LOADED ###");
-	}
+    public IbmMqRouteDelegateImpl() {
+        super("IBM-MQ");
+        System.out.println("### PLUGIN `IBM-MQ` HAS LOADED ###");
+    }
 
-	public List<RouteBundle> generateRouteList(List<RouteBundle> destinations, List<RouteBundle> recipients,
-			String scanType, String messagingServiceId) {
-		List<RouteBundle> result = new ArrayList<>();
+    public List<RouteBundle> generateRouteList(List<RouteBundle> destinations, List<RouteBundle> recipients,
+                                               String scanType, String messagingServiceId) {
+        List<RouteBundle> result = new ArrayList<>();
 
-		switch (IbmMqScanType.valueOf(scanType)) {
-		case IBMMQ_ALL:
-			result.add(queueRouteBundle(destinations, recipients, messagingServiceId,
-					IbmMqScanType.IBMMQ_QUEUE.name()));
+        switch (IbmMqScanType.valueOf(scanType)) {
+            case IBMMQ_ALL:
+                result.add(queueRouteBundle(destinations, recipients, messagingServiceId));
+                result.add(subscriptionRouteBundle(destinations, recipients, messagingServiceId));
+                break;
+            case IBMMQ_QUEUE:
+                result.add(queueRouteBundle(destinations, recipients, messagingServiceId));
+                break;
+            case IBMMQ_SUBSCRIPTION:
+                result.add(subscriptionRouteBundle(destinations, recipients, messagingServiceId));
+                break;
+        }
 
-			result.add(subscriptionRouteBundle(destinations, recipients, messagingServiceId,
-					IbmMqScanType.IBMMQ_SUBSCRIPTION.name()));
-			break;
-		case IBMMQ_QUEUE:
-			result.add(queueRouteBundle(destinations, recipients, messagingServiceId,
-					IbmMqScanType.IBMMQ_QUEUE.name()));
-			break;
-		case IBMMQ_SUBSCRIPTION:
-			result.add(subscriptionRouteBundle(destinations, recipients, messagingServiceId,
-					IbmMqScanType.IBMMQ_SUBSCRIPTION.name()));
-			break;
-		}
+        return result;
+    }
 
-		return result;
-	}
+    private RouteBundle queueRouteBundle(List<RouteBundle> destinations, List<RouteBundle> recipients,
+                                         String messagingServiceId) {
+        return createRouteBundle(destinations, recipients, IbmMqScanType.IBMMQ_QUEUE.label, messagingServiceId,
+                IbmMqRouteId.IBMMQ_QUEUE.label, true);
+    }
 
-	private RouteBundle queueRouteBundle(List<RouteBundle> destinations, List<RouteBundle> recipients,
-			String messagingServiceId, String scanType) {
-		return createRouteBundle(destinations, recipients, scanType, messagingServiceId,
-				IbmMqRouteId.IBMMQ_QUEUE.label, true);
-	}
-
-	private RouteBundle subscriptionRouteBundle(List<RouteBundle> destinations, List<RouteBundle> recipients,
-			String messagingServiceId, String scanType) {
-		return createRouteBundle(destinations, recipients, scanType, messagingServiceId,
-				IbmMqRouteId.IBMMQ_SUBSCRIPTION.label, true);
-	}
+    private RouteBundle subscriptionRouteBundle(List<RouteBundle> destinations, List<RouteBundle> recipients,
+                                                String messagingServiceId) {
+        return createRouteBundle(destinations, recipients, IbmMqScanType.IBMMQ_SUBSCRIPTION.label, messagingServiceId,
+                IbmMqRouteId.IBMMQ_SUBSCRIPTION.label, false);
+    }
 }

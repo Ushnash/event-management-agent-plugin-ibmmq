@@ -2,12 +2,15 @@ package com.solace.maas.ep.event.management.agent.plugin.ibmmq.client.http;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.solace.maas.ep.event.management.agent.plugin.ibmmq.processor.event.IbmMqQueueEvent;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class IbmMqQueueResponse {
 
-	List<IbmMqQueueEvent> queue;
+	private List<IbmMqQueueEvent> queue;
 }

@@ -31,9 +31,8 @@ public class IbmMqSubscriptionProcessor extends ResultProcessorImpl<List<IbmMqSu
 
 		IbmMqHttpClient client = messagingServiceDelegateService.getMessagingServiceClient(messagingServiceId);
 
-		// this is probably going to fail b/c it won't be able to find "QueueManager"
 		log.info("### Invoking Queue endpoint for messaging service with ID {}", messagingServiceId);
-		IbmMqSubscriptionResponse subscriptionList = client.getSubscriptions(properties.get("QueueManager").toString());
+		IbmMqSubscriptionResponse subscriptionList = client.getSubscriptions();
 
 		return subscriptionList.getSubscription();
 	}

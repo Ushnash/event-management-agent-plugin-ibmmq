@@ -32,7 +32,7 @@ public class IbmMqQueueProcessor extends ResultProcessorImpl<List<IbmMqQueueEven
 		IbmMqHttpClient client = messagingServiceDelegateService.getMessagingServiceClient(messagingServiceId);
 
 		log.info("### Invoking Queue endpoint for messaging service with ID {}", messagingServiceId);
-		IbmMqQueueResponse queueList = client.getQueues(properties.get("QueueManager").toString());
+		IbmMqQueueResponse queueList = client.getQueues();
 
 		return queueList.getQueue();
 	}
